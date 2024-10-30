@@ -1,0 +1,405 @@
+--[[
+    Basic response setup config time boys
+    - Triggers: The key words that will trigger this response, make sure it's specific as if that term matches in the query then that response will be picked.
+    - Responses: A list of responses that the AI will randomly pick from when responding to a query (As long as it's not overwritten by the customAction return).
+    - customCheck: A custom check of whether a player can *actually* run that query. Return true if you want a player to be able to run it, false if not.
+    - customAction: You can have the bot run a customAction if you want. Return false to have the bot pick a random response from the Responses setting,
+    return a string to have that overwrite the response with one of your own.
+]]--
+
+ASBaseAI.Responses = {
+    --[[UPDATE AI DATABASE]]--
+    {
+        triggers = {
+            "System Call, Update AI Database",
+            "System Call Update AI Database"
+        },
+
+        responses = {
+            "Attempting to update AI database..."
+        },
+
+        customCheck = function(ply,txt)
+            return ply:IsSuperAdmin()
+        end,
+
+        customAction = function(ply,txt)
+            ASBaseAI.Utils.UpdateDB()
+            return false
+        end,
+    },
+    --[[HELLO]]--
+    {
+        triggers = {
+            "Hey",
+            "Hi",
+            "Hello",
+            "Good Morning",
+            "Good Afternoon",
+            "Good Evening",
+        },
+
+        responses = {
+            "Hey there %n",
+            "Welcome back %n",
+            "Hi %n!",
+            "Good day to you!"
+        },
+
+        customCheck = function(ply,txt)
+            return true
+        end,
+
+        customAction = function(ply,txt)
+            return false
+        end,
+
+        canSee = function(ply,text,activator)
+            return ply == activator
+        end,
+    },
+    --[[NAME]]--
+    {
+        triggers = {
+            "What's your name?",
+            "Whats your name?",
+            "What's your name",
+            "Whats your name"
+        },
+
+        responses = {
+            "I am the Artificial Labile Intelligent Cybernated Existence, Alice for short. Nice to meet you!",
+        },
+
+        customCheck = function(ply,txt)
+            return true
+        end,
+
+        customAction = function(ply,txt)
+            return false
+        end,
+
+        canSee = function(ply,text,activator)
+            return ply == activator
+        end,
+    },
+
+    --[[
+
+        MAIN BASE FUNCTIONS
+
+    ]]
+
+    {
+        triggers = {
+            "System Call, Toggle Main Base Gate",
+            "System Call, Toggle Main Gate",
+        },
+
+        responses = {
+            "Confirmed %n, now toggling Main Gate",
+            "Understood, Main Gate now toggling...",
+        },
+
+        customCheck = function(ply,txt)
+            return ply:HasAccessNumber(3) or ply:InVehicle()
+        end,
+
+        customAction = function(ply,txt)
+            local gate = ents.GetMapCreatedEntity(2655)
+            local button = ents.GetMapCreatedEntity(2656)
+            if IsDoorOpen(gate) then
+                gate:Fire("Close")
+                button.ButtonToggled = false
+                return "&7Toggled &f - Main Gate closing..."
+            else
+                gate:Fire("Open")
+                button.ButtonToggled = true
+                return "&7Toggled &f - Main Gate opening..."
+            end
+            return false
+        end,
+
+        canSee = function(ply,text,activator)
+            return ply == activator
+        end,
+    },
+
+    {
+        triggers = {
+            "System Call, Open Main Base Gate",
+            "System Call, Open Main Gate",
+        },
+
+        responses = {
+            "Confirmed %n, now toggling Main Gate",
+            "Understood, Main Gate now toggling...",
+        },
+
+        customCheck = function(ply,txt)
+            return ply:HasAccessNumber(3) or ply:InVehicle()
+        end,
+
+        customAction = function(ply,txt)
+            local gate = ents.GetMapCreatedEntity(2655)
+            local button = ents.GetMapCreatedEntity(2656)
+            if IsDoorOpen(gate) then
+                return "&4Error &f - Main Gate already open..."
+            else
+                gate:Fire("Open")
+                button.ButtonToggled = true
+                return "&2Confirmed &f - Main Gate opening..."
+            end
+            return false
+        end,
+
+        canSee = function(ply,text,activator)
+            return ply == activator
+        end,
+    },
+
+    {
+        triggers = {
+            "System Call, Close Main Base Gate",
+            "System Call, Close Main Gate",
+        },
+
+        responses = {
+            "Confirmed %n, now toggling Main Gate",
+            "Understood, Main Gate now toggling...",
+        },
+
+        customCheck = function(ply,txt)
+            return ply:HasAccessNumber(3) or ply:InVehicle()
+        end,
+
+        customAction = function(ply,txt)
+            local door1 = ents.GetMapCreatedEntity(2102)
+            local door2 = ents.GetMapCreatedEntity(2101)
+            if IsDoorOpen(gate) then
+                gate:Fire("Close")
+                button.ButtonToggled = false
+                return "&2Confirmed &f - Main Gate closing..."
+            else
+                return "&4Error &f - Main Gate already closed..."
+            end
+            return false
+        end,
+
+        canSee = function(ply,text,activator)
+            return ply == activator
+        end,
+    },
+
+    {
+        triggers = {
+            "System Call, Toggle Side Hanger Bay",
+            "System Call, Toggle Side Hanger",
+        },
+
+        responses = {
+            "Confirmed %n, now toggling Main Gate",
+            "Understood, Main Gate now toggling...",
+        },
+
+        customCheck = function(ply,txt)
+            return ply:HasAccessNumber(3) or ply:InVehicle()
+        end,
+
+        customAction = function(ply,txt)
+            local door1 = ents.GetMapCreatedEntity(2102)
+            local door2 = ents.GetMapCreatedEntity(2101)
+            if IsDoorOpen(door1) then
+                door1:Fire("Close")
+                door2:Fire("Close")
+                return "&7Toggled &f - Side Hangar Bay closing..."
+            else
+                door1:Fire("Open")
+                door2:Fire("Open")
+                return "&7Toggled &f - Side Hangar Bay opening..."
+            end
+            return false
+        end,
+
+        canSee = function(ply,text,activator)
+            return ply == activator
+        end,
+    },
+
+    {
+        triggers = {
+            "System Call, Open Side Hanger Bay",
+            "System Call, Open Side Hanger",
+        },
+
+        responses = {
+            "Confirmed %n, now toggling Main Gate",
+            "Understood, Main Gate now toggling...",
+        },
+
+        customCheck = function(ply,txt)
+            return ply:HasAccessNumber(3) or ply:InVehicle()
+        end,
+
+        customAction = function(ply,txt)
+            local door1 = ents.GetMapCreatedEntity(2102)
+            local door2 = ents.GetMapCreatedEntity(2101)
+            if IsDoorOpen(door1) then
+                return "&4Error &f - Side Hanger already closed..."
+            else
+                door1:Fire("Open")
+                door2:Fire("Open")
+                return "&2Confirmed &f - Side Hangar Bay opening..."
+            end
+            return false
+        end,
+
+        canSee = function(ply,text,activator)
+            return ply == activator
+        end,
+    },
+
+    {
+        triggers = {
+            "System Call, Close Side Hanger Bay",
+            "System Call, Close Side Hanger",
+        },
+
+        responses = {
+            "Confirmed %n, now toggling Main Gate",
+            "Understood, Main Gate now toggling...",
+        },
+
+        customCheck = function(ply,txt)
+            return ply:HasAccessNumber(3) or ply:InVehicle()
+        end,
+
+        customAction = function(ply,txt)
+            local door1 = ents.GetMapCreatedEntity(2102)
+            local door2 = ents.GetMapCreatedEntity(2101)
+            if IsDoorOpen(door1) then
+                door1:Fire("Close")
+                door2:Fire("Close")
+                return "&2Confirmed &f - Side Hangar closing..."
+            else
+                return "&4Error &f - Side Hanger already closed..."
+            end
+            return false
+        end,
+
+        canSee = function(ply,text,activator)
+            return ply == activator
+        end,
+    },
+
+    {
+        triggers = {
+            "System Call, Toggle Brig Rayshield"
+        },
+
+        responses = {
+            "Confirmed %n, now toggling Brig Rayshield",
+            "Understood, Brig Shields now toggling...",
+        },
+
+        customCheck = function(ply,txt)
+            return ply:HasAccessNumber(5) or ply:DoBorealis("HasQualificationOption", "jedi_assigned", "cg") or ply:DoBorealis("HasQualification", "temple_guard") or ply:getJobTable().category == "Clone Guard"
+        end,
+
+        customAction = function(ply,txt)
+            local gate = ents.GetMapCreatedEntity(2344)
+            gate:Fire("Toggle")
+            return "Brig Rayshield - &7Toggled &f"
+        end,
+
+        canSee = function(ply,text,activator)
+            return ply == activator
+        end,
+    },
+
+    {
+        triggers = {
+            "System Call, Toggle Brig Lockdown",
+            "System Call, Lockdown Brig",
+            "System Call, Brig Lockdown"
+        },
+
+        responses = {
+            "Confirmed %n, now toggling Brig Lockdown",
+            "Understood, Brig Lockdown now toggling...",
+        },
+
+        customCheck = function(ply,txt)
+            return ply:HasAccessNumber(5) or ply:DoBorealis("HasQualificationOption", "jedi_assigned", "cg") or ply:getJobTable().category == "Clone Guard"
+        end,
+
+        customAction = function(ply,txt)
+            local gate = ents.GetMapCreatedEntity(2341)
+            gate:Fire("Press")
+            return "Brig Lockdown - &7Toggled &f"
+        end,
+
+        canSee = function(ply,text,activator)
+            return ply == activator
+        end,
+    },
+
+    {
+        triggers = {
+            "System Call, Open The Panic Room 9714",
+            "System Call, Toggle Panic Room 9714",
+            "System Call, Toggle Panic 9714",
+            "System Call, Panic 9714"
+        },
+
+        responses = {
+            "Confirmed %n, now opening the Panic Room",
+            "Understood, Panic Room now opening...",
+        },
+
+        customCheck = function(ply,txt)
+            return true
+        end,
+
+        customAction = function(ply, text)
+            local panicdoor = ents.GetMapCreatedEntity(2340)
+            if panicdoor.active then return "Panic Room already cycling" end
+            panicdoor:Fire("Toggle")
+            panicdoor.active = true
+            timer.Simple(3, function()
+                panicdoor:Fire("Toggle")
+                panicdoor.active = false
+            end)
+            return "Panic Room - &7Toggled for 3s &f"
+        end,
+
+        canSee = function(ply,text,activator)
+            return ply == activator
+        end,
+    },
+
+    {
+        triggers = {
+            "System Call, Open The Panic Room",
+            "System Call, Toggle Panic Room",
+            "System Call, Toggle Panic",
+            "System Call, Panic"
+        },
+
+        responses = {
+            "Apologies %n, please append the Panic Room access code",
+        },
+
+        customCheck = function(ply,txt)
+            return true
+        end,
+
+        customAction = function(ply, text)
+            return false
+        end,
+
+        canSee = function(ply,text,activator)
+            return ply == activator
+        end,
+    },
+}
