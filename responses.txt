@@ -74,23 +74,32 @@ ASBaseAI.Responses = {
             "Searching for vehicles friendly to you...",
         },
 
-        customCheck = function(ply,txt)
+        customCheck = function(ply, txt)
             return ply:IsAdmin()
         end,
 
-        customAction = function(ply,txt)
+        customAction = function(ply, txt)
             local friendlyVehicles = {}
             local vehicles = LVS:GetVehicles()
+
             for _, vehicle in pairs(vehicles) do
-                if vehicle:GetClass() and ply:lvsGetAITeam(vehicle:GetClass()) == 2 then
-                    table.insert(friendlyVehicles, vehicle:GetClass())
+                local driverSeat = vehicle:GetPassengerSeat(1) -- Get the driver seat (seat 1)
+                local driver = driverSeat and driverSeat:GetDriver() or nil
+
+                if ply:lvsGetAITeam(vehicle:GetClass()) == 2 then
+                    local driverName = "CT " .. math.random(1000, 9999) -- Default AI driver name
+                    if driver and driver:IsPlayer() then
+                        driverName = driver:Nick() -- Player driver name
+                    end
+
+                    table.insert(friendlyVehicles, vehicle:GetDisplayName() .. "\nDriver: " .. driverName)
                 end
             end
 
             if #friendlyVehicles == 0 then
                 return "No friendly vehicles found."
             else
-                return "Friendly vehicles: " .. table.concat(friendlyVehicles, ", ")
+                return "Friendly vehicles:\n\n" .. table.concat(friendlyVehicles, "\n\n")
             end
         end,
 
