@@ -105,7 +105,7 @@ ASBaseAI.Responses = {
     canSee = function(ply, text, activator)
         return ply == activator
     end,
-}
+},
     --[[NAME]]--
     {
         triggers = {
