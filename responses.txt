@@ -84,6 +84,67 @@ ASBaseAI.Responses = {
         end,
     },
 
+--[[LOCATE UNIT]]--
+    {
+        triggers = {
+            "System Call, Locate Unit",
+        },
+
+        responses = {
+            "Locating unit %n...",
+            "Searching for %n, please wait...",
+            "Attempting to locate %n...",
+        },
+
+        customCheck = function(ply, txt)
+            -- Ensure the player has permission to use this command
+            return ply:HasAccessNumber(3)
+        end,
+
+        customAction = function(ply, txt)
+            -- Extract the name from the command
+            local args = string.Split(txt, " ")
+            local targetName = table.concat(args, " ", 4) -- Extract name after "System Call, Locate Unit"
+            if not targetName or targetName == "" then
+                return "&4Error &f- No target name provided. Usage: /baseai System Call, Locate Unit <Name>"
+            end
+
+            -- Find the player by name
+            local target = nil
+            for _, v in ipairs(player.GetAll()) do
+                if string.find(string.lower(v:Nick()), string.lower(targetName), 1, true) then
+                    target = v
+                    break
+                end
+            end
+
+            if not target then
+                return "&4Error &f- No player found with the name: " .. targetName
+            end
+
+            -- Toggle halo effect
+            if target.HaloActive then
+                target.HaloActive = false
+                hook.Remove("PreDrawHalos", "LocateUnitHalo")
+                return "&2Confirmed &f- Halo removed from " .. target:Nick()
+            else
+                target.HaloActive = true
+                hook.Add("PreDrawHalos", "LocateUnitHalo", function()
+                    if IsValid(target) and target.HaloActive then
+                        halo.Add({target}, Color(255, 0, 0), 2, 2, 1, true, true)
+                    else
+                        hook.Remove("PreDrawHalos", "LocateUnitHalo")
+                    end
+                end)
+                return "&2Confirmed &f- Halo added to " .. target:Nick()
+            end
+        end,
+
+        canSee = function(ply, text, activator)
+            return ply == activator
+        end,
+    },
+
     --[[
 
         MAIN BASE FUNCTIONS
