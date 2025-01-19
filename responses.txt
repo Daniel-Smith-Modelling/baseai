@@ -83,16 +83,18 @@ ASBaseAI.Responses = {
             local vehicles = LVS:GetVehicles()
 
             for _, vehicle in pairs(vehicles) do
-                local driverSeat = vehicle:GetPassengerSeat(1) -- Get the driver seat (seat 1)
+                local className = vehicle:GetClass() -- Get the vehicle's class
+                local driverSeat = vehicle:GetPassengerSeat(1) -- Get the driver seat
                 local driver = driverSeat and driverSeat:GetDriver() or nil
 
-                if ply:lvsGetAITeam(vehicle:GetClass()) == 2 then
+                if ply:lvsGetAITeam(className) == 2 then
                     local driverName = "CT " .. math.random(1000, 9999) -- Default AI driver name
                     if driver and driver:IsPlayer() then
                         driverName = driver:Nick() -- Player driver name
                     end
 
-                    table.insert(friendlyVehicles, vehicle:GetDisplayName() .. "\nDriver: " .. driverName)
+                    -- Format the entry with class name as the display name
+                    table.insert(friendlyVehicles, className .. "\nDriver: " .. driverName)
                 end
             end
 
