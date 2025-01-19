@@ -7,6 +7,9 @@
     return a string to have that overwrite the response with one of your own.
 ]]--
 
+-- A table to store assigned AI driver names for vehicles
+local assignedDrivers = {}
+
 ASBaseAI.Responses = {
     --[[UPDATE AI DATABASE]]--
     {
@@ -87,9 +90,12 @@ ASBaseAI.Responses = {
                 local driver = driverSeat and driverSeat:GetDriver() or nil
 
                 if ply:lvsGetAITeam(vehicle:GetClass()) == 2 then
-                    local driverName = "CT " .. math.random(1000, 9999) -- Default AI driver name
+                    -- Check if the driver is AI and assign a persistent name
+                    local driverName = assignedDrivers[vehicle] or ("CT " .. math.random(1000, 9999))
                     if driver and driver:IsPlayer() then
                         driverName = driver:Nick() -- Player driver name
+                    else
+                        assignedDrivers[vehicle] = driverName -- Save AI name for this vehicle
                     end
 
                     -- Get vehicle stats
