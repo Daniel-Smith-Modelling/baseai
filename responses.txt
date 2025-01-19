@@ -103,16 +103,20 @@ ASBaseAI.Responses = {
                     local maxHp = vehicle:GetMaxHP() or 1 -- Prevent division by 0
                     local hpPercent = math.Round((hp / maxHp) * 100, 1)
 
-                    local shield = vehicle:GetShield() or 0
-                    local maxShield = vehicle:GetMaxShield() or 1 -- Prevent division by 0
-                    local shieldPercent = math.Round((shield / maxShield) * 100, 1)
+                    local shield = vehicle:GetShield()
+                    local maxShield = vehicle:GetMaxShield()
+                    local shieldPercent = shield and maxShield and math.Round((shield / maxShield) * 100, 1) or nil
 
-                    -- Add to the friendly vehicle list
-                    table.insert(friendlyVehicles,
-                        tostring(vehicle) .. "\nDriver: " .. driverName ..
-                        "\nHP: " .. hp .. " / " .. maxHp .. " (" .. hpPercent .. "%)" ..
-                        "\nShield: " .. shield .. " / " .. maxShield .. " (" .. shieldPercent .. "%)"
-                    )
+                    -- Create vehicle details string
+                    local details = tostring(vehicle) .. "\nDriver: " .. driverName ..
+                        "\nHP: " .. hp .. " / " .. maxHp .. " (" .. hpPercent .. "%)"
+
+                    -- Include shield information only if it exists
+                    if shield and maxShield then
+                        details = details .. "\nShield: " .. shield .. " / " .. maxShield .. " (" .. shieldPercent .. "%)"
+                    end
+
+                    table.insert(friendlyVehicles, details)
                 end
             end
 
