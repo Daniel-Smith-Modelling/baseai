@@ -92,8 +92,21 @@ ASBaseAI.Responses = {
                         driverName = driver:Nick() -- Player driver name
                     end
 
-                    -- Use vehicle entity directly in output
-                    table.insert(friendlyVehicles, tostring(vehicle) .. "\nDriver: " .. driverName)
+                    -- Get vehicle stats
+                    local hp = vehicle:GetHP() or 0
+                    local maxHp = vehicle:GetMaxHP() or 1 -- Prevent division by 0
+                    local hpPercent = math.Round((hp / maxHp) * 100, 1)
+
+                    local shield = vehicle:GetShield() or 0
+                    local maxShield = vehicle:GetMaxShield() or 1 -- Prevent division by 0
+                    local shieldPercent = math.Round((shield / maxShield) * 100, 1)
+
+                    -- Add to the friendly vehicle list
+                    table.insert(friendlyVehicles,
+                        tostring(vehicle) .. "\nDriver: " .. driverName ..
+                        "\nHP: " .. hp .. " / " .. maxHp .. " (" .. hpPercent .. "%)" ..
+                        "\nShield: " .. shield .. " / " .. maxShield .. " (" .. shieldPercent .. "%)"
+                    )
                 end
             end
 
