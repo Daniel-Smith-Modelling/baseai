@@ -177,11 +177,12 @@ ASBaseAI.Responses = {
                 local targetName = string.Trim(text) -- Get the reply
                 local target = nil
 
-                -- Search for the player by their nickname or name close to what was typed
-                for _, pl in ipairs(player.GetAll()) do
-                    if string.find(string.lower(pl:Nick()), string.lower(targetName), 1, true) then
-                        target = pl
-                        break
+                if targetName and targetName ~= "" then
+                    for _, pl in ipairs(player.GetAll()) do
+                        if string.find(string.lower(pl:Nick()), string.lower(targetName), 1, true) then
+                            target = pl
+                            break
+                        end
                     end
                 end
 
@@ -217,7 +218,6 @@ ASBaseAI.Responses = {
         return ply == activator
     end,
 },
-
     --[[NAME]]--
     {
         triggers = {
