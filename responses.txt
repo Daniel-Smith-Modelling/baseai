@@ -63,49 +63,41 @@ ASBaseAI.Responses = {
     LIST FRIENDLY VEHICLES COMMAND
 ]]
 {
-    triggers = {
-        "System Call, List Friendly Vehicles",
-        "System Call List Friendly Vehicles",
-        "List Friendly Vehicles",
-        "Show Friendly Vehicles",
-    },
+        triggers = {
+            "System Call, List Friendly Vehicles",
+            "System Call List Friendly Vehicles",
+        },
 
-    responses = {
-        "Here is the list of friendly vehicles, %n:",
-        "Accessing vehicle database... Friendly vehicles listed below, %n:",
-    },
+        responses = {
+            "Scanning for friendly vehicles...",
+            "Retrieving friendly vehicles...",
+            "Searching for vehicles friendly to you...",
+        },
 
-    customCheck = function(ply, txt)
-        return true  -- All players can run this command
-    end,
+        customCheck = function(ply,txt)
+            return ply:IsAdmin()
+        end,
 
-    customAction = function(ply, txt)
-        local friendlyVehicles = {}
-        
-        -- Get the list of vehicles using LVS functions
-        for _, vehicle in pairs(LVS:GetVehicles()) do
-            if vehicle:IsFriendly(ply) then -- Assuming IsFriendly is a valid function for checking ownership or affiliation
-                table.insert(friendlyVehicles, vehicle:GetVehicleName())
+        customAction = function(ply,txt)
+            local friendlyVehicles = {}
+            local vehicles = LVS:GetVehicles()
+            for _, vehicle in pairs(vehicles) do
+                if vehicle:GetClass() and ply:lvsGetAITeam(vehicle:GetClass()) == 2 then
+                    table.insert(friendlyVehicles, vehicle:GetClass())
+                end
             end
-        end
 
-        if #friendlyVehicles == 0 then
-            return "&4Error &f- No friendly vehicles detected."
-        end
+            if #friendlyVehicles == 0 then
+                return "No friendly vehicles found."
+            else
+                return "Friendly vehicles: " .. table.concat(friendlyVehicles, ", ")
+            end
+        end,
 
-        -- Generate a formatted response
-        local response = "&2Friendly Vehicles Detected:&f\n"
-        for _, name in ipairs(friendlyVehicles) do
-            response = response .. "- " .. name .. "\n"
-        end
-
-        return response
-    end,
-
-    canSee = function(ply, text, activator)
-        return ply == activator
-    end,
-},
+        canSee = function(ply, text, activator)
+            return ply == activator
+        end,
+    },
     --[[NAME]]--
     {
         triggers = {
