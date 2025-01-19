@@ -86,9 +86,9 @@ ASBaseAI.Responses = {
             local vehicles = LVS:GetVehicles()
             local npcs = LVS:GetNPCs()
 
-            -- Filter and process vehicles friendly to Team 2
+            -- Filter and process vehicles friendly to Team 2 and not Team 1
             for _, vehicle in pairs(vehicles) do
-                if ply:lvsGetAITeam(vehicle:GetClass()) == 2 then
+                if ply:lvsGetAITeam(vehicle:GetClass()) == 2 and ply:lvsGetAITeam(vehicle:GetClass()) ~= 1 then
                     -- Get the vehicle's entity name
                     local vehicleName = vehicle:GetClass() -- Fallback to class name
                     if vehicle.PrintName and vehicle.PrintName ~= "" then
@@ -127,9 +127,9 @@ ASBaseAI.Responses = {
                 end
             end
 
-            -- Filter and process NPCs friendly to Team 2
+            -- Filter and process NPCs friendly to Team 2 and not Team 1
             for _, npc in pairs(npcs) do
-                if LVS:GetNPCRelationship(npc:GetClass()) == 2 then
+                if LVS:GetNPCRelationship(npc:GetClass()) == 2 and LVS:GetNPCRelationship(npc:GetClass()) ~= 1 then
                     local npcName = npc:GetName() or npc:GetClass()
                     table.insert(friendlyEntities, npcName .. " (Friendly NPC)")
                 end
