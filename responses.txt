@@ -160,42 +160,57 @@ ASBaseAI.Responses = {
         "Deactivating halo on %n",
     },
 
-    customCheck = function(ply,txt)
-            return ply:IsSuperAdmin()
-        end,
+    customCheck = function(ply, txt)
+        return ply:IsSuperAdmin() -- Only allow Super Admins to use this
+    end,
 
     customAction = function(ply, txt)
-        local targetName = string.match(txt, "Locate Unit%s+(.*)") -- Extract the name after "Locate Unit"
-        local target = nil
+        -- Ask the question "Who do you want to track?"
+        ply:ConCommand("say Who do you want to track?") -- Send a message to the chat
 
-        -- Search for the player by their nickname or name close to what was typed
-        for _, pl in ipairs(player.GetAll()) do
-            if string.find(string.lower(pl:Nick()), string.lower(targetName), 1, true) then
-                target = pl
-                break
+        -- Temporarily store the responder
+        local responder = ply
+
+        -- Hook to detect the next message from the responder
+        hook.Add("PlayerSay", "TrackResponder", function(ply, text, teamChat)
+            if ply == responder then
+                local targetName = string.Trim(text) -- Get the reply
+                local target = nil
+
+                -- Search for the player by their nickname or name close to what was typed
+                for _, pl in ipairs(player.GetAll()) do
+                    if string.find(string.lower(pl:Nick()), string.lower(targetName), 1, true) then
+                        target = pl
+                        break
+                    end
+                end
+
+                if target then
+                    -- Check if the halo is already active
+                    if target.HaloActive and target.HaloActive:IsValid() then
+                        -- Deactivate the halo
+                        target.HaloActive:Remove()
+                        target.HaloActive = nil
+                        responder:PrintMessage(HUD_PRINTTALK, "Deactivating halo on " .. target:Nick())
+                        return true -- Stop the hook
+                    else
+                        -- Activate the halo
+                        local haloColor = Color(255, 255, 255, 255) -- Example color: white
+                        local haloSize = 100
+
+                        -- Create a halo effect around the target
+                        target.HaloActive = halo.Add(target, haloColor, haloSize, haloSize * 0.5, 1, true, true, 0, true)
+                        responder:PrintMessage(HUD_PRINTTALK, "Locating " .. target:Nick() .. "...")
+                        return true -- Stop the hook
+                    end
+                else
+                    responder:PrintMessage(HUD_PRINTTALK, "Player not found. Please check the name and try again.")
+                    return true -- Stop the hook
+                end
             end
-        end
+        end)
 
-        if target then
-            -- Check if the halo is already active
-            if target.HaloActive and target.HaloActive:IsValid() then
-                -- Deactivate the halo
-                target.HaloActive:Remove()
-                target.HaloActive = nil
-                return "Deactivating halo on %n"
-            else
-                -- Activate the halo
-                local haloColor = Color(255, 255, 255, 255) -- Example color: white
-                local haloSize = 100
-
-                -- Create a halo effect around the target
-                target.HaloActive = halo.Add(target, haloColor, haloSize, haloSize * 0.5, 1, true, true, 0, true)
-                return "Locating %n..."
-            end
-        else
-            return "Player not found. Please check the name and try again."
-        end
-        return false
+        return "Who do you want to track?"
     end,
 
     canSee = function(ply, text, activator)
