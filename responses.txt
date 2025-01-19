@@ -168,7 +168,7 @@ ASBaseAI.Responses = {
         -- Ask the question "Who do you want to track?"
         ply:ConCommand("say Who do you want to track?") -- Send a message to the chat
 
-        -- Temporarily store the responder
+        -- Store the responder
         local responder = ply
 
         -- Hook to detect the next message from the responder
