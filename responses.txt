@@ -160,9 +160,9 @@ ASBaseAI.Responses = {
         "Deactivating halo on %n",
     },
 
-    customCheck = function(ply, txt)
-        return ply:IsAdmin() -- Only allow Admins or higher to use this
-    end,
+    customCheck = function(ply,txt)
+            return ply:IsSuperAdmin()
+        end,
 
     customAction = function(ply, txt)
         local targetName = string.match(txt, "Locate Unit%s+(.*)") -- Extract the name after "Locate Unit"
