@@ -146,6 +146,63 @@ ASBaseAI.Responses = {
             return ply == activator
         end,
     },
+
+    --[[TRACK]]--
+{
+    triggers = {
+        "System Call, Locate Unit",
+        "System Call Locate Unit",
+        "Locate Unit",
+    },
+
+    responses = {
+        "Locating %n...",
+        "Deactivating halo on %n",
+    },
+
+    customCheck = function(ply, txt)
+        return ply:IsAdmin() -- Only allow Admins or higher to use this
+    end,
+
+    customAction = function(ply, txt)
+        local targetName = string.match(txt, "Locate Unit%s+(.*)") -- Extract the name after "Locate Unit"
+        local target = nil
+
+        -- Search for the player by their nickname or name close to what was typed
+        for _, pl in ipairs(player.GetAll()) do
+            if string.find(string.lower(pl:Nick()), string.lower(targetName), 1, true) then
+                target = pl
+                break
+            end
+        end
+
+        if target then
+            -- Check if the halo is already active
+            if target.HaloActive and target.HaloActive:IsValid() then
+                -- Deactivate the halo
+                target.HaloActive:Remove()
+                target.HaloActive = nil
+                return "Deactivating halo on %n"
+            else
+                -- Activate the halo
+                local haloColor = Color(255, 255, 255, 255) -- Example color: white
+                local haloSize = 100
+
+                -- Create a halo effect around the target
+                target.HaloActive = halo.Add(target, haloColor, haloSize, haloSize * 0.5, 1, true, true, 0, true)
+                return "Locating %n..."
+            end
+        else
+            return "Player not found. Please check the name and try again."
+        end
+        return false
+    end,
+
+    canSee = function(ply, text, activator)
+        return ply == activator
+    end,
+}
+
     --[[NAME]]--
     {
         triggers = {
