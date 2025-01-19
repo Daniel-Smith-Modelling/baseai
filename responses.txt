@@ -58,6 +58,54 @@ ASBaseAI.Responses = {
             return ply == activator
         end,
     },
+
+    --[[
+    LIST FRIENDLY VEHICLES COMMAND
+]]
+{
+    triggers = {
+        "System Call, List Friendly Vehicles",
+        "System Call List Friendly Vehicles",
+        "List Friendly Vehicles",
+        "Show Friendly Vehicles",
+    },
+
+    responses = {
+        "Here is the list of friendly vehicles, %n:",
+        "Accessing vehicle database... Friendly vehicles listed below, %n:",
+    },
+
+    customCheck = function(ply, txt)
+        return true  -- All players can run this command
+    end,
+
+    customAction = function(ply, txt)
+        local friendlyVehicles = {}
+        
+        -- Get the list of vehicles using LVS functions
+        for _, vehicle in pairs(LVS:GetVehicles()) do
+            if vehicle:IsFriendly(ply) then -- Assuming IsFriendly is a valid function for checking ownership or affiliation
+                table.insert(friendlyVehicles, vehicle:GetVehicleName())
+            end
+        end
+
+        if #friendlyVehicles == 0 then
+            return "&4Error &f- No friendly vehicles detected."
+        end
+
+        -- Generate a formatted response
+        local response = "&2Friendly Vehicles Detected:&f\n"
+        for _, name in ipairs(friendlyVehicles) do
+            response = response .. "- " .. name .. "\n"
+        end
+
+        return response
+    end,
+
+    canSee = function(ply, text, activator)
+        return ply == activator
+    end,
+}
     --[[NAME]]--
     {
         triggers = {
