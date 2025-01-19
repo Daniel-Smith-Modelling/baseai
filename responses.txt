@@ -90,6 +90,12 @@ ASBaseAI.Responses = {
                 local driver = driverSeat and driverSeat:GetDriver() or nil
 
                 if ply:lvsGetAITeam(vehicle:GetClass()) == 2 then
+                    -- Get the vehicle's entity name
+                    local vehicleName = vehicle:GetClass() -- Fallback to class name
+                    if vehicle.PrintName and vehicle.PrintName ~= "" then
+                        vehicleName = vehicle.PrintName -- Use friendly display name if available
+                    end
+
                     -- Check if the driver is AI and assign a persistent name
                     local driverName = assignedDrivers[vehicle] or ("CT " .. math.random(1000, 9999))
                     if driver and driver:IsPlayer() then
@@ -108,7 +114,7 @@ ASBaseAI.Responses = {
                     local shieldPercent = shield and maxShield and math.Round((shield / maxShield) * 100, 1) or nil
 
                     -- Create vehicle details string
-                    local details = tostring(vehicle) .. "\nDriver: " .. driverName ..
+                    local details = vehicleName .. "\nDriver: " .. driverName ..
                         "\nHP: " .. hp .. " / " .. maxHp .. " (" .. hpPercent .. "%)"
 
                     -- Include shield information only if it exists
@@ -123,7 +129,7 @@ ASBaseAI.Responses = {
             if #friendlyVehicles == 0 then
                 return "No friendly vehicles found."
             else
-                return "Friendly vehicles:\n\n" .. table.concat(friendlyVehicles, "\n\n")
+                return "Friendly vehicles:\n" .. table.concat(friendlyVehicles, "\n\n")
             end
         end,
 
